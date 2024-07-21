@@ -1,5 +1,4 @@
 
-
 import React from 'react'
 import Box from '@mui/material/Box'
 import Button from '@mui/material/Button'
@@ -23,7 +22,7 @@ function Recent() {
     }
     return (
         <Box>
-            <Button
+            <Button sx={{ color: 'white' }}
                 id="basic-button-recent"
                 aria-controls={open ? 'basic-menu-recent' : undefined}
                 aria-haspopup="true"

@@ -32,7 +32,7 @@ function Profiles() {
                     aria-haspopup="true"
                     aria-expanded={open ? 'true' : undefined}
                 >
-                    <Avatar sx={{ width: 30, height: 30 }}
+                    <Avatar sx={{ width: 36, height: 36 }}
                         alt='LongBa'
                         src='https://images-ext-1.discordapp.net/external/qOpjIdoji3HhLLYQVFcFbr0Z9OIIwFNWJirH99_wIo8/https/pbs.twimg.com/media/GSrfo9IaYAAQ8J-.png%3Alarge?format=webp&width=676&height=676'
                     />
