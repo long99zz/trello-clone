@@ -8,7 +8,7 @@ import { Group } from '@mui/icons-material'
 import { Comment } from '@mui/icons-material'
 import { Attachment } from '@mui/icons-material'
 
-function Card() {
+function Card({ card }) {
     return (
         <MuiCard sx={{
             cursor: 'pointer',
@@ -16,23 +16,26 @@ function Card() {
             overflow: 'unset'
 
         }}>
-            <CardMedia
-                sx={{ height: 140 }}
-                image="/static/images/cards/contemplative-reptile.jpg"
-                title="green iguana"
-            />
+            {card?.cover &&
+                <CardMedia
+                    sx={{ height: 140 }}
+                    image={card?.cover}
+                    title="green iguana"
+                />
+            }
             <CardContent sx={{
                 p: 1.5,
                 '&:last-child': {
                     p: 1.5
                 }
             }}>
-                <Typography>Lizard</Typography>
+                <Typography>{card?.title}</Typography>
             </CardContent>
             <CardActions sx={{ p: '0 4px 8px 4px' }}>
-                <Button size="small" startIcon={<Group />}>20</Button>
-                <Button size="small" startIcon={<Comment />}>15</Button>
-                <Button size="small" startIcon={<Attachment />}>10</Button>
+                {!!card?.memberIds?.length && <Button size="small" startIcon={<Group />}>{card?.memberIds?.length}</Button>}
+                {!!card?.comments?.length && <Button size="small" startIcon={<Comment />}>{card?.comments?.length}</Button>}
+                {!!card?.attachments?.length && <Button size="small" startIcon={<Attachment />}>{card?.attachments?.length}</Button>}
+
             </CardActions>
         </MuiCard>
     )
