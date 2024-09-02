@@ -1,0 +1,13 @@
+{
+  "name": "trello-api",
+  "version": "1.0.0",
+  "description": "trello clone's api",
+  "main": "src/server.js",
+  "repository": "long99zz",
+  "author": "long99zz",
+  "license": "MIT",
+  "dependencies": {
+    "express": "^4.18.2",
+    "trello-api": "file:"
+  }
+}
