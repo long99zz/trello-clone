@@ -6,8 +6,8 @@ const createNew = async (req, res, next) => {
   try {
     // console.log('req.body: ', req.body)
     // throw new ApiError(StatusCodes.BAD_GATEWAY, 'test error!')
-    const createdBoard = await boardService,createNew(req.body)
-    res.status(StatusCodes.CREATED).json({ message: 'POST form Controller: API create new board' })
+    const createdBoard = await boardService.createNew(req.body)
+    res.status(StatusCodes.CREATED).json({ createdBoard })
   } catch (error) {
     next(error)}
 }
