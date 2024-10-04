@@ -6,15 +6,20 @@ import { useState } from 'react'
 import { TextField } from '@mui/material'
 import { toast } from 'react-toastify'
 
-function ListColumns({ columns }) {
+function ListColumns({ columns, createNewColumn, createNewCard }) {
   const [openNewColumnForm, setOpenNewColumnForm] = useState(false)
   const toggleOpenNewColumnForm = () => setOpenNewColumnForm(!openNewColumnForm)
   const [newColumnTitle, setNewColumnTitle] = useState('')
-  const addNewColumn = () => {
+  const addNewColumn = async () => {
     if (!newColumnTitle) {
       toast.error('Please enter Column Title!')
       return
     }
+    const newColumnData = {
+      title: newColumnTitle
+    }
+    console.log('New Column Data:', newColumnData)
+    await createNewColumn(newColumnData)
     toggleOpenNewColumnForm()
     setNewColumnTitle('')
   }
@@ -31,7 +36,7 @@ function ListColumns({ columns }) {
         '&::-webkit-scrollbar-track': { m: 2 }
       }}>
         {columns?.map((column) => {
-          return <Column key={column._id} column={column} />
+          return <Column key={column._id} column={column} createNewCard={createNewCard} />
         })}
         {!openNewColumnForm
           ? <Box onClick = {toggleOpenNewColumnForm} sx={{
@@ -92,8 +97,9 @@ function ListColumns({ columns }) {
                   boxShadow: 'none',
                   border: '0.5px solid',
                   borderColor: (theme) => theme.palette.success.main,
-                  '&:hover': { bgcolor:(theme) => theme.palette.success.dark }
+                  '&:hover': { bgcolor: (theme) => theme.palette.success.dark }
                 }}
+                onClick={addNewColumn}
               >Add Column</Button>
               <Close
                 fontSize='small'
