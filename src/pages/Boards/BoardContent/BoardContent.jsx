@@ -1,19 +1,20 @@
 import Box from '@mui/material/Box'
 import ListColumns from './ListColumns/ListColumns'
 import { mapOrder } from '~/utils/sorts'
-import { defaultDropAnimationSideEffects, DndContext, DragOverlay, PointerSensor, useSensor, useSensors, closestCorners, pointerWithin, getFirstCollision } from '@dnd-kit/core'
+import { defaultDropAnimationSideEffects, DndContext, DragOverlay, PointerSensor, useSensor, useSensors, closestCorners, pointerWithin, getFirstCollision, rectIntersection, closestCenter } from '@dnd-kit/core'
 import { useCallback, useEffect, useRef, useState } from 'react'
 import { arrayMove } from '@dnd-kit/sortable'
 import Column from './ListColumns/Column/Column'
 import Card from './ListColumns/Column/ListCards/Card/Card'
-import { cloneDeep } from 'lodash'
+import { cloneDeep, isEmpty } from 'lodash'
+import { generatePlaceholderCard } from '~/utils/formatters'
 
 const ACTIVE_DRAG_ITEM_TYPE = {
   COLUMN: 'ACTIVE_DRAG_ITEM_TYPE_COLUMN',
   CARD: 'ACTIVE_DRAG_ITEM_TYPE_CARD'
 }
 
-function BoardContent({ board, createNewColumn, createNewCard }) {
+function BoardContent({ board, createNewColumn, createNewCard, moveColumns }) {
   const pointerSensor = useSensor(PointerSensor, {
     activationConstraint: {
       distance: 10
@@ -28,12 +29,11 @@ function BoardContent({ board, createNewColumn, createNewCard }) {
   const lastOverId = useRef(null)
 
   useEffect(() => {
-    console.log('Board Data:', board)
     setOrderedColumns(mapOrder(board?.columns, board?.columnOrderIds, '_id'))
   }, [board])
 
   const findColumnByCardId = (cardId) => {
-    return orderedColumns.find(column => column?.cards?.some(card => card._id === cardId))
+    return orderedColumns.find(column => column?.cards?.map(card => card._id)?.includes(cardId))
   }
   const moveCardBetweenDiffColumns = (
     overColumn,
@@ -55,6 +55,9 @@ function BoardContent({ board, createNewColumn, createNewCard }) {
 
       const nextColumns = cloneDeep(prevColumns)
       const nextActiveColumn = nextColumns.find(column => column._id === activeColumn._id)
+      if (isEmpty(nextActiveColumn.cards)) {
+        nextActiveColumn.cards = [generatePlaceholderCard(nextActiveColumn)]
+      }
       const nextOverColumn = nextColumns.find(column => column._id === overColumn._id)
 
       if (nextActiveColumn) {
@@ -86,6 +89,8 @@ function BoardContent({ board, createNewColumn, createNewCard }) {
   }
 
   const handleDragOver = (event) => {
+    console.log('Drag Over - over item:', event.over?.id) // ID của vùng thả hiện tại
+    console.log('Columns:', orderedColumns) // Danh sách cột hiện có
     if (activeDragItemType === ACTIVE_DRAG_ITEM_TYPE.COLUMN) return
     const { active, over } = event
     if (!active || !over) return
@@ -108,6 +113,7 @@ function BoardContent({ board, createNewColumn, createNewCard }) {
         activeDraggingCardData
       )
     }
+
   }
 
   const handleDragEnd = (event) => {
@@ -152,6 +158,7 @@ function BoardContent({ board, createNewColumn, createNewCard }) {
         const oldColumnIndex = orderedColumns.findIndex(c => c._id === active.id)
         const newColumnIndex = orderedColumns.findIndex(c => c._id === over.id)
         const dndOrderedColumns = arrayMove(orderedColumns, oldColumnIndex, newColumnIndex)
+        moveColumns(dndOrderedColumns)
         setOrderedColumns(dndOrderedColumns)
       }
 
@@ -161,6 +168,7 @@ function BoardContent({ board, createNewColumn, createNewCard }) {
       setActiveDragItemData(null)
       setOldColumn(null)
     }
+
   }
 
   const customDropAnimation = {
@@ -178,17 +186,19 @@ function BoardContent({ board, createNewColumn, createNewCard }) {
       return closestCorners({ ...args })
     }
     const pointerIntersections = pointerWithin(args)
-    if (!pointerIntersections?.length) return
-    let overId = getFirstCollision(pointerIntersections, 'id')
+    const intersections = !!pointerIntersections?.length
+      ? pointerIntersections
+      : rectIntersection(args)
+    let overId = getFirstCollision(intersections, 'id')
     if (overId) {
       const checkColumn = orderedColumns.find(column => column._id === overId)
       if (checkColumn) {
-        overId = closestCorners({
+        overId = closestCenter({
           ...args,
           droppableContainers: args.droppableContainers.filter(container => {
             return (container.id !== overId) && (checkColumn?.cardOrderIds?.includes(container.id))
-          })[0]?.id
-        })
+          })
+        })[0]?.id
         lastOverId.current = overId
         return [{ id: overId }]
       }
@@ -199,10 +209,10 @@ function BoardContent({ board, createNewColumn, createNewCard }) {
 
   return (
     <DndContext
-      onDragStart={handleDragStart}
-      onDragEnd={handleDragEnd}
       sensors={sensors}
       collisionDetection={collisionDetectionStrategy}
+      onDragStart={handleDragStart}
+      onDragEnd={handleDragEnd}
       onDragOver={handleDragOver}
     >
       <Box sx={{

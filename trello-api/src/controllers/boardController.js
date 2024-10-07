@@ -4,8 +4,6 @@ import { boardService } from '~/services/boardService'
 
 const createNew = async (req, res, next) => {
   try {
-    // console.log('req.body: ', req.body)
-    // throw new ApiError(StatusCodes.BAD_GATEWAY, 'test error!')
     const createdBoard = await boardService.createNew(req.body)
     res.status(StatusCodes.CREATED).json({ createdBoard })
   } catch (error) {
@@ -21,8 +19,18 @@ const getDetails = async (req, res, next) => {
     next(error)
   }
 }
+const update = async (req, res, next) => {
+  try {
+    const boardId = req.params.id
+    const updatedBoard = await boardService.update(boardId, req.body)
+    res.status(StatusCodes.OK).json(updatedBoard)
+  } catch (error) {
+    next(error)
+  }
+}
 
 export const boardController = {
   createNew,
-  getDetails
+  getDetails,
+  update
 }

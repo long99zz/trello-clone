@@ -25,7 +25,7 @@ function ListColumns({ columns, createNewColumn, createNewCard }) {
   }
 
   return (
-    <SortableContext items={columns?.map(c => c._id)} strategy={horizontalListSortingStrategy}>
+    <SortableContext items={columns?.map(columns => columns._id)} strategy={horizontalListSortingStrategy}>
       <Box sx={{
         bgcolor: 'inherit',
         width: '100%',
