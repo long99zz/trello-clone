@@ -3,6 +3,7 @@ import { Box } from '@mui/material'
 import Card from './Card/Card'
 
 function ListCards({ cards }) {
+
   return (
     <SortableContext items={cards?.map(c => c._id)} strategy={verticalListSortingStrategy}>
       <Box sx={{

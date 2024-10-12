@@ -56,6 +56,7 @@ function Column({ column, createNewCard }) {
       title: newCardTitle,
       columnId: column._id
     }
+
     createNewCard(newCardData)
     toggleOpenNewCardForm()
     setNewCardTitle('')

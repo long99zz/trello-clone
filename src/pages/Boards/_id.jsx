@@ -9,7 +9,8 @@ import {
   createNewCardAPI,
   fetchBoardDetailsAPI,
   updateBoardDetailsAPI,
-  updateColumnDetailsAPI
+  updateColumnDetailsAPI,
+  moveCardToDiffColumnAPI
 } from '~/apis'
 import { generatePlaceholderCard } from '~/utils/formatters'
 import { isEmpty } from 'lodash'
@@ -31,8 +32,9 @@ function Board() {
         } else {
           column.cards = mapOrder(column.cards, column.cardOrderIds, '_id')
         }
+
       })
-      console.log('Board: ', board)
+
       setBoard(board)
     })
   }, [])
@@ -59,10 +61,18 @@ function Board() {
     })
     const newBoard = { ...board }
     const columnToUpdate = newBoard.columns.find(column => column._id === createdCard.columnId)
+
     if (columnToUpdate) {
-      columnToUpdate.cards.push(createdCard)
-      columnToUpdate.cardOrderIds.push(createdCard._id)
+      if (columnToUpdate.cards.some(card => card.FE_Placeholdercard)) {
+        columnToUpdate.cards = [createdCard]
+        columnToUpdate.cardOrderIds = [createdCard._id]
+      } else {
+        columnToUpdate.cards.push(createdCard)
+        columnToUpdate.cardOrderIds.push(createdCard._id)
+      }
+
     }
+    setBoard(newBoard)
   }
   const moveColumns = (dndOrderedColumns) => {
     const dndOrderedColumnIds = dndOrderedColumns.map(c => c._id)
@@ -83,6 +93,25 @@ function Board() {
     }
     setBoard(newBoard)
     updateColumnDetailsAPI(columnId, { cardOrderIds: dndOrderedCardIds })
+  }
+  const moveCardToDiffColumn = (currentCardId, prevColumnId, nextColumnId, dndOrderedColumns) => {
+    const dndOrderedColumnIds = dndOrderedColumns.map(c => c._id)
+    const newBoard = { ...board }
+    newBoard.columns = dndOrderedColumns
+    newBoard.columnOrderIds = dndOrderedColumnIds
+
+    setBoard(newBoard)
+
+    let prevCardOrderIds = dndOrderedColumns.find(c => c._id === prevColumnId)?.cardOrderIds
+
+    if (prevCardOrderIds[0].includes('placeholder-card')) prevCardOrderIds = []
+    moveCardToDiffColumnAPI({
+      currentCardId,
+      prevColumnId,
+      prevCardOrderIds: dndOrderedColumns.find(c => c._id === prevColumnId)?.cardOrderIds,
+      nextColumnId,
+      nextCardOrderIds: dndOrderedColumns.find(c => c._id === nextColumnId)?.cardOrderIds
+    })
   }
   if (!board) {
     return (
@@ -109,6 +138,7 @@ function Board() {
         createNewCard={createNewCard}
         moveColumns={moveColumns}
         moveCardInTheSameColumn={moveCardInTheSameColumn}
+        moveCardToDiffColumn={moveCardToDiffColumn}
       />
     </Container>
   )
