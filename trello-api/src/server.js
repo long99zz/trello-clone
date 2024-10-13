@@ -9,7 +9,6 @@ import { corsOptions } from '~/config/cors'
 
 const START_SERVER = () => {
   const app = express()
-  const port = process.env.PORT || 4000
   app.use(cors(corsOptions))
 
   app.use(express.json())
@@ -19,12 +18,12 @@ const START_SERVER = () => {
   app.use(errorHandlingMiddleware)
 
   if (env.BUILD_MODE === 'production') {
-    app.listen(port, () => {
-      console.log(`Production: Hello ${env.AUTHOR}, I am running at Port:${port}`)
+    app.listen(process.env.PORT, () => {
+      console.log(`Production: Hello ${env.AUTHOR}, I am running at Port:${process.env.PORT}`)
     })
   } else {
-    app.listen(env.APP_PORT, env.APP_HOST, () => {
-      console.log(`Local Dev: Hello ${env.AUTHOR}, I am running at ${env.APP_HOST}:${env.APP_PORT}`)
+    app.listen(env.LOCAL_APP_PORT, env.LOCAL_APP_HOST, () => {
+      console.log(`Local Dev: Hello ${env.AUTHOR}, I am running at ${env.LOCAL_APP_HOST}:${env.LOCAL_APP_PORT}`)
     })
   }
 
