@@ -2092,6 +2092,11 @@ lru-cache@^5.1.1:
   dependencies:
     yallist "^3.0.2"
 
+material-ui-confirm@^3.0.9:
+  version "3.0.16"
+  resolved "https://registry.npmjs.org/material-ui-confirm/-/material-ui-confirm-3.0.16.tgz"
+  integrity sha512-aJoa/FM/U/86qztoljlk8FWmjSJbAMzDWCdWbDqU5WwB0WzcWPyGrhBvIqihR9uKdHKBf1YrvMjn68uOrfsXAg==
+
 memory-pager@^1.0.2:
   version "1.5.0"
   resolved "https://registry.npmjs.org/memory-pager/-/memory-pager-1.5.0.tgz"
@@ -2705,6 +2710,7 @@ tr46@^4.1.1:
     "@mui/material" "^5.13.0"
     axios "1.5.1"
     lodash "^4.17.21"
+    material-ui-confirm "^3.0.9"
     mongodb "^6.0.0"
     react "^18.3.1"
     react-dom "^18.3.1"

@@ -4,12 +4,11 @@ import CardContent from '@mui/material/CardContent'
 import CardMedia from '@mui/material/CardMedia'
 import Typography from '@mui/material/Typography'
 import Button from '@mui/material/Button'
-import { Group, Opacity } from '@mui/icons-material'
+import { Group } from '@mui/icons-material'
 import { Comment } from '@mui/icons-material'
 import { Attachment } from '@mui/icons-material'
 import { useSortable } from '@dnd-kit/sortable'
 import { CSS } from '@dnd-kit/utilities'
-import theme from '~/theme'
 
 function Card({ card }) {
   const {

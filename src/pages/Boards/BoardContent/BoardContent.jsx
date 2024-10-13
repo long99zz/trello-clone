@@ -1,6 +1,6 @@
 import Box from '@mui/material/Box'
 import ListColumns from './ListColumns/ListColumns'
-import { defaultDropAnimationSideEffects, DndContext, DragOverlay, PointerSensor, useSensor, useSensors, closestCorners, pointerWithin, getFirstCollision, rectIntersection, closestCenter } from '@dnd-kit/core'
+import { defaultDropAnimationSideEffects, DndContext, DragOverlay, useSensor, useSensors, closestCorners, pointerWithin, getFirstCollision, rectIntersection, closestCenter, MouseSensor, TouchSensor } from '@dnd-kit/core'
 import { useCallback, useEffect, useRef, useState } from 'react'
 import { arrayMove } from '@dnd-kit/sortable'
 import Column from './ListColumns/Column/Column'
@@ -18,13 +18,11 @@ function BoardContent({ board,
   createNewCard,
   moveColumns,
   moveCardInTheSameColumn,
-  moveCardToDiffColumn }) {
-  const pointerSensor = useSensor(PointerSensor, {
-    activationConstraint: {
-      distance: 10
-    }
-  })
-  const sensors = useSensors(pointerSensor)
+  moveCardToDiffColumn,
+  deleteColumnDetails }) {
+  const mouseSensor = useSensor(MouseSensor, { activationConstraint: { distance: 10 } })
+  const touchSensor = useSensor(TouchSensor, { activationConstraint: { delay: 250, tolerance: 500 } })
+  const sensors = useSensors(mouseSensor, touchSensor)
   const [orderedColumns, setOrderedColumns] = useState([])
   const [activeDragItemId, setActiveDragItemId] = useState(null)
   const [activeDragItemType, setActiveDragItemType] = useState(null)
@@ -241,7 +239,9 @@ function BoardContent({ board,
         <ListColumns
           columns={orderedColumns}
           createNewColumn={createNewColumn}
-          createNewCard={ createNewCard} />
+          createNewCard={createNewCard}
+          deleteColumnDetails={deleteColumnDetails}
+        />
         <DragOverlay dropAnimation={customDropAnimation}>
           {(!activeDragItemId || !activeDragItemType) && null}
           {(activeDragItemId && activeDragItemType === ACTIVE_DRAG_ITEM_TYPE.COLUMN) && <Column column={activeDragItemData} />}
