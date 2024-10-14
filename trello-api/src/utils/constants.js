@@ -1,5 +1,5 @@
 export const WHITELIST_DOMAINS = [
-  'https://trello-clone-self-five.vercel.app'
+  'https://trello-clone-glftwfpeo-long99zzs-projects.vercel.app'
 ]
 
 export const BOARD_TYPES = {
